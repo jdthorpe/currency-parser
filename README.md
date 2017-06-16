@@ -66,11 +66,11 @@ CP.euro_currency_parser("\u20ac(1.234.567,89)") // -1234567.89
 CP.euro_currency_parser("(\u00a51.234.567,89)") // -1234567.89
 
 var wierd_currency_paresr = CP.currency_regex({decimal:"v",separator:"_"});
-CP.english_currency_parser("$1_234_567v89")     // 1234567.89
-CP.english_currency_parser("$-1_234_567v89")    // -1234567.89
-CP.euro_currency_parser("\u20ac1_234_567v89")   // 1234567.89
-CP.euro_currency_parser("\u20ac(1_234_567v89)") // -1234567.89
-CP.euro_currency_parser("(\u00a51_234_567v89)") // -1234567.89
+CP.wierd_currency_parser("$1_234_567v89")        // 1234567.89
+CP.wierd_currency_parser("$-1_234_567v89")       // -1234567.89
+CP.wierd_currency_parser("\u20ac1_234_567v89")   // 1234567.89
+CP.wierd_currency_parser("\u20ac(1_234_567v89)") // -1234567.89
+CP.wierd_currency_parser("(\u00a51_234_567v89)") // -1234567.89
 
 var yen_only_currency_regex = CP.currency_regex({decimal:".",separator:",",symbol:"\u00a5"});
 yen_only_currency_regex.test("\u20a5(1,234,567.89)") // -1234567.89
