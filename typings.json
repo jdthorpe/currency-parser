@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "ajv": "registry:npm/ajv#3.5.0+20160208185606",
     "xregexp": "registry:dt/xregexp#3.0.0+20160428043022"
   }
 }
