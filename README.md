@@ -48,7 +48,7 @@ euro_currency_regex.test("\u20ac(1.234.567,89)")  // true
 wierd_currency_regex.test("\u20ac(1_234_567v89)") // true
 
 var yen_only_currency_regex = CP.currency_regex({decimal:".",separator:",",symbol:"\u00a5"});
-yen_only_currency_regex.test("\u20a5(1,234,567.89)") // true
+yen_only_currency_regex.test("\u00a5(1,234,567.89)") // true
 yen_only_currency_regex.test("$(1,234,567.89)")      // false
 yen_only_currency_regex.test("\u20ac(1,234,567.89)") // false
 ```
