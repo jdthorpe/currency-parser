@@ -80,7 +80,7 @@ for(var i=0;i<numeric_values.length;i++){indices[i] = i}
 //-- ====================
 //-- JAVASCRIPT LAND
 //-- ====================
-//-- x = require("./currency-strings")
+//-- x = require("./currency-parser")
 //-- var numeric_values = [
 //--         0,
 //--         1,
@@ -166,10 +166,13 @@ describe("english_currency_regex",function(){
     it("should correctly match a vareiety of strings",function(){
         for(var k=0;k< symbol_names.length;k++){
             var s:string = symbols[symbol_names[k]];
-            expect(good_english_numbers.every((x)=>english_currency_regex.test(      s +x      ))).to.be.true
-            expect(good_english_numbers.every((x)=>english_currency_regex.test('+' + s +x      ))).to.be.true
-            expect(good_english_numbers.every((x)=>english_currency_regex.test('-' + s +x      ))).to.be.true
-            expect(good_english_numbers.every((x)=>english_currency_regex.test('(' + s +x + ")"))).to.be.true
+            expect(good_english_numbers.every((x)=>english_currency_regex.test(      s + x      ))).to.be.true
+            expect(good_english_numbers.every((x)=>english_currency_regex.test(s + '+' + x      ))).to.be.true
+            expect(good_english_numbers.every((x)=>english_currency_regex.test('+' + s + x      ))).to.be.true
+            expect(good_english_numbers.every((x)=>english_currency_regex.test(s + '-' + x      ))).to.be.true
+            expect(good_english_numbers.every((x)=>english_currency_regex.test('-' + s + x      ))).to.be.true
+            expect(good_english_numbers.every((x)=>english_currency_regex.test(s +'(' +  x + ")"))).to.be.true
+            expect(good_english_numbers.every((x)=>english_currency_regex.test('(' + s + x + ")"))).to.be.true
         }
     })
 
@@ -178,8 +181,11 @@ describe("english_currency_regex",function(){
             var s:string = symbols[symbol_names[k]];
                 expect(indices.map((i)=> (Number(get_currency_value(      s + good_english_numbers[i]      ,english_options)) == numeric_values[i]) ).every((x)=>x)).to.be.true
                 expect(indices.map((i)=> (Number(get_currency_value('+' + s + good_english_numbers[i]      ,english_options)) == numeric_values[i]) ).every((x)=>x)).to.be.true
+                expect(indices.map((i)=> (Number(get_currency_value(s + '+' + good_english_numbers[i]      ,english_options)) == numeric_values[i]) ).every((x)=>x)).to.be.true
                 expect(indices.map((i)=> (Number(get_currency_value('-' + s + good_english_numbers[i]      ,english_options)) == -numeric_values[i]) ).every((x)=>x)).to.be.true
+                expect(indices.map((i)=> (Number(get_currency_value(s + '-' + good_english_numbers[i]      ,english_options)) == -numeric_values[i]) ).every((x)=>x)).to.be.true
                 expect(indices.map((i)=> (Number(get_currency_value('(' + s + good_english_numbers[i] + ")",english_options)) == -numeric_values[i]) ).every((x)=>x)).to.be.true
+                expect(indices.map((i)=> (Number(get_currency_value(s + '(' + good_english_numbers[i] + ")",english_options)) == -numeric_values[i]) ).every((x)=>x)).to.be.true
         }
     })
 
@@ -204,10 +210,13 @@ describe("english_currency_regex",function(){
 
         for(var k=0;k< symbol_names.length;k++){
             var s:string = symbols[symbol_names[k]];
-            expect(bad_english_numbers.every((x)=>!english_currency_regex.test(      s +x      ))).to.be.true
-            expect(bad_english_numbers.every((x)=>!english_currency_regex.test('+' + s +x      ))).to.be.true
-            expect(bad_english_numbers.every((x)=>!english_currency_regex.test('-' + s +x      ))).to.be.true
-            expect(bad_english_numbers.every((x)=>!english_currency_regex.test('(' + s +x + ")"))).to.be.true
+            expect(bad_english_numbers.every((x)=>!english_currency_regex.test(      s + x      ))).to.be.true
+            expect(bad_english_numbers.every((x)=>!english_currency_regex.test(s + '+' + x      ))).to.be.true
+            expect(bad_english_numbers.every((x)=>!english_currency_regex.test('+' + s + x      ))).to.be.true
+            expect(bad_english_numbers.every((x)=>!english_currency_regex.test(s + '-' + x      ))).to.be.true
+            expect(bad_english_numbers.every((x)=>!english_currency_regex.test('-' + s + x      ))).to.be.true
+            expect(bad_english_numbers.every((x)=>!english_currency_regex.test(s + '(' + x + ")"))).to.be.true
+            expect(bad_english_numbers.every((x)=>!english_currency_regex.test('(' + s + x + ")"))).to.be.true
         }
 
     })
@@ -251,10 +260,13 @@ describe("Other currency patterns",function(){
 
             for(var k=0;k< symbol_names.length;k++){
                 var s:string = symbols[symbol_names[k]];
-                expect(good_numbers.every((x)=>another_currency_pattern.test(      s +x      ))).to.be.true
-                expect(good_numbers.every((x)=>another_currency_pattern.test('+' + s +x      ))).to.be.true
-                expect(good_numbers.every((x)=>another_currency_pattern.test('-' + s +x      ))).to.be.true
-                expect(good_numbers.every((x)=>another_currency_pattern.test('(' + s +x + ")"))).to.be.true
+                expect(good_numbers.every((x)=>another_currency_pattern.test(      s + x      ))).to.be.true
+                expect(good_numbers.every((x)=>another_currency_pattern.test(s + '+' + x      ))).to.be.true
+                expect(good_numbers.every((x)=>another_currency_pattern.test('+' + s + x      ))).to.be.true
+                expect(good_numbers.every((x)=>another_currency_pattern.test(s + '-' + x      ))).to.be.true
+                expect(good_numbers.every((x)=>another_currency_pattern.test('-' + s + x      ))).to.be.true
+                expect(good_numbers.every((x)=>another_currency_pattern.test(s + '(' + x + ")"))).to.be.true
+                expect(good_numbers.every((x)=>another_currency_pattern.test('(' + s + x + ")"))).to.be.true
             }
 
         })
@@ -263,8 +275,11 @@ describe("Other currency patterns",function(){
             for(var k=0;k< symbol_names.length;k++){
                 var s:string = symbols[symbol_names[k]];
                     expect(indices.map((i)=> (Number(get_currency_value(      s + good_numbers[i]      ,strange_options)) == numeric_values[i]) ).every((x)=>x)).to.be.true
+                    expect(indices.map((i)=> (Number(get_currency_value(s + '+' + good_numbers[i]      ,strange_options)) == numeric_values[i]) ).every((x)=>x)).to.be.true
                     expect(indices.map((i)=> (Number(get_currency_value('+' + s + good_numbers[i]      ,strange_options)) == numeric_values[i]) ).every((x)=>x)).to.be.true
+                    expect(indices.map((i)=> (Number(get_currency_value(s + '-' + good_numbers[i]      ,strange_options)) == -numeric_values[i]) ).every((x)=>x)).to.be.true
                     expect(indices.map((i)=> (Number(get_currency_value('-' + s + good_numbers[i]      ,strange_options)) == -numeric_values[i]) ).every((x)=>x)).to.be.true
+                    expect(indices.map((i)=> (Number(get_currency_value(s + '(' + good_numbers[i] + ")",strange_options)) == -numeric_values[i]) ).every((x)=>x)).to.be.true
                     expect(indices.map((i)=> (Number(get_currency_value('(' + s + good_numbers[i] + ")",strange_options)) == -numeric_values[i]) ).every((x)=>x)).to.be.true
             }
         })
@@ -291,10 +306,13 @@ describe("Other currency patterns",function(){
 
             for(var k=0;k< symbol_names.length;k++){
                 var s:string = symbols[symbol_names[k]];
-                expect(bad_numbers.every((x)=>!another_currency_pattern.test(      s +x      ))).to.be.true
-                expect(bad_numbers.every((x)=>!another_currency_pattern.test('+' + s +x      ))).to.be.true
-                expect(bad_numbers.every((x)=>!another_currency_pattern.test('-' + s +x      ))).to.be.true
-                expect(bad_numbers.every((x)=>!another_currency_pattern.test('(' + s +x + ")"))).to.be.true
+                expect(bad_numbers.every((x)=>!another_currency_pattern.test(      s + x      ))).to.be.true
+                expect(bad_numbers.every((x)=>!another_currency_pattern.test(s + '+' + x      ))).to.be.true
+                expect(bad_numbers.every((x)=>!another_currency_pattern.test('+' + s + x      ))).to.be.true
+                expect(bad_numbers.every((x)=>!another_currency_pattern.test(s + '-' + x      ))).to.be.true
+                expect(bad_numbers.every((x)=>!another_currency_pattern.test('-' + s + x      ))).to.be.true
+                expect(bad_numbers.every((x)=>!another_currency_pattern.test(s + '(' + x + ")"))).to.be.true
+                expect(bad_numbers.every((x)=>!another_currency_pattern.test('(' + s + x + ")"))).to.be.true
             }
 
         })

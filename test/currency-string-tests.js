@@ -66,7 +66,7 @@ for (var i = 0; i < numeric_values.length; i++) {
 //-- ====================
 //-- JAVASCRIPT LAND
 //-- ====================
-//-- x = require("./currency-strings")
+//-- x = require("./currency-parser")
 //-- var numeric_values = [
 //--         0,
 //--         1,
@@ -152,8 +152,11 @@ describe("english_currency_regex", function () {
         for (var k = 0; k < symbol_names.length; k++) {
             var s = symbols[symbol_names[k]];
             expect(good_english_numbers.every(function (x) { return english_currency_regex.test(s + x); })).to.be.true;
+            expect(good_english_numbers.every(function (x) { return english_currency_regex.test(s + '+' + x); })).to.be.true;
             expect(good_english_numbers.every(function (x) { return english_currency_regex.test('+' + s + x); })).to.be.true;
+            expect(good_english_numbers.every(function (x) { return english_currency_regex.test(s + '-' + x); })).to.be.true;
             expect(good_english_numbers.every(function (x) { return english_currency_regex.test('-' + s + x); })).to.be.true;
+            expect(good_english_numbers.every(function (x) { return english_currency_regex.test(s + '(' + x + ")"); })).to.be.true;
             expect(good_english_numbers.every(function (x) { return english_currency_regex.test('(' + s + x + ")"); })).to.be.true;
         }
     });
@@ -162,8 +165,11 @@ describe("english_currency_regex", function () {
             var s = symbols[symbol_names[k]];
             expect(indices.map(function (i) { return (Number(get_currency_value(s + good_english_numbers[i], english_options)) == numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
             expect(indices.map(function (i) { return (Number(get_currency_value('+' + s + good_english_numbers[i], english_options)) == numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
+            expect(indices.map(function (i) { return (Number(get_currency_value(s + '+' + good_english_numbers[i], english_options)) == numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
             expect(indices.map(function (i) { return (Number(get_currency_value('-' + s + good_english_numbers[i], english_options)) == -numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
+            expect(indices.map(function (i) { return (Number(get_currency_value(s + '-' + good_english_numbers[i], english_options)) == -numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
             expect(indices.map(function (i) { return (Number(get_currency_value('(' + s + good_english_numbers[i] + ")", english_options)) == -numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
+            expect(indices.map(function (i) { return (Number(get_currency_value(s + '(' + good_english_numbers[i] + ")", english_options)) == -numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
         }
     });
     it("should correctly reject a vareiety of values", function () {
@@ -188,8 +194,11 @@ describe("english_currency_regex", function () {
         for (var k = 0; k < symbol_names.length; k++) {
             var s = symbols[symbol_names[k]];
             expect(bad_english_numbers.every(function (x) { return !english_currency_regex.test(s + x); })).to.be.true;
+            expect(bad_english_numbers.every(function (x) { return !english_currency_regex.test(s + '+' + x); })).to.be.true;
             expect(bad_english_numbers.every(function (x) { return !english_currency_regex.test('+' + s + x); })).to.be.true;
+            expect(bad_english_numbers.every(function (x) { return !english_currency_regex.test(s + '-' + x); })).to.be.true;
             expect(bad_english_numbers.every(function (x) { return !english_currency_regex.test('-' + s + x); })).to.be.true;
+            expect(bad_english_numbers.every(function (x) { return !english_currency_regex.test(s + '(' + x + ")"); })).to.be.true;
             expect(bad_english_numbers.every(function (x) { return !english_currency_regex.test('(' + s + x + ")"); })).to.be.true;
         }
     });
@@ -224,8 +233,11 @@ describe("Other currency patterns", function () {
             for (var k = 0; k < symbol_names.length; k++) {
                 var s = symbols[symbol_names[k]];
                 expect(good_numbers.every(function (x) { return another_currency_pattern.test(s + x); })).to.be.true;
+                expect(good_numbers.every(function (x) { return another_currency_pattern.test(s + '+' + x); })).to.be.true;
                 expect(good_numbers.every(function (x) { return another_currency_pattern.test('+' + s + x); })).to.be.true;
+                expect(good_numbers.every(function (x) { return another_currency_pattern.test(s + '-' + x); })).to.be.true;
                 expect(good_numbers.every(function (x) { return another_currency_pattern.test('-' + s + x); })).to.be.true;
+                expect(good_numbers.every(function (x) { return another_currency_pattern.test(s + '(' + x + ")"); })).to.be.true;
                 expect(good_numbers.every(function (x) { return another_currency_pattern.test('(' + s + x + ")"); })).to.be.true;
             }
         });
@@ -233,8 +245,11 @@ describe("Other currency patterns", function () {
             for (var k = 0; k < symbol_names.length; k++) {
                 var s = symbols[symbol_names[k]];
                 expect(indices.map(function (i) { return (Number(get_currency_value(s + good_numbers[i], strange_options)) == numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
+                expect(indices.map(function (i) { return (Number(get_currency_value(s + '+' + good_numbers[i], strange_options)) == numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
                 expect(indices.map(function (i) { return (Number(get_currency_value('+' + s + good_numbers[i], strange_options)) == numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
+                expect(indices.map(function (i) { return (Number(get_currency_value(s + '-' + good_numbers[i], strange_options)) == -numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
                 expect(indices.map(function (i) { return (Number(get_currency_value('-' + s + good_numbers[i], strange_options)) == -numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
+                expect(indices.map(function (i) { return (Number(get_currency_value(s + '(' + good_numbers[i] + ")", strange_options)) == -numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
                 expect(indices.map(function (i) { return (Number(get_currency_value('(' + s + good_numbers[i] + ")", strange_options)) == -numeric_values[i]); }).every(function (x) { return x; })).to.be.true;
             }
         });
@@ -260,8 +275,11 @@ describe("Other currency patterns", function () {
             for (var k = 0; k < symbol_names.length; k++) {
                 var s = symbols[symbol_names[k]];
                 expect(bad_numbers.every(function (x) { return !another_currency_pattern.test(s + x); })).to.be.true;
+                expect(bad_numbers.every(function (x) { return !another_currency_pattern.test(s + '+' + x); })).to.be.true;
                 expect(bad_numbers.every(function (x) { return !another_currency_pattern.test('+' + s + x); })).to.be.true;
+                expect(bad_numbers.every(function (x) { return !another_currency_pattern.test(s + '-' + x); })).to.be.true;
                 expect(bad_numbers.every(function (x) { return !another_currency_pattern.test('-' + s + x); })).to.be.true;
+                expect(bad_numbers.every(function (x) { return !another_currency_pattern.test(s + '(' + x + ")"); })).to.be.true;
                 expect(bad_numbers.every(function (x) { return !another_currency_pattern.test('(' + s + x + ")"); })).to.be.true;
             }
         });

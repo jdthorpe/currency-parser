@@ -25,8 +25,11 @@ export function currency_regex(options:currency_regex_options){
         decimal_part = `([${options.decimal}]\\d+)`,
         // optional currency symbol followed by either (a) an interger part followed by
         // an optional decimal part, or (b)just a decimal part 
-        currecy_figure = `${currency_symbol}?(${integer_part}${decimal_part}?|${decimal_part})`;
-    return xreg(`^([+-]?${currecy_figure}|\\(${currecy_figure}\\))$` );
+        number_part = `(${integer_part}${decimal_part}?|${decimal_part})`,
+        neg_accounting_number = `${currency_symbol}?\\(${number_part}\\)`,
+        currecy_figure = `${currency_symbol}?${number_part}`,
+        signed_currecy_figure = `${currency_symbol}?[+-]${number_part}`;
+    return xreg(`^([+-]?${currecy_figure}|\\(${currecy_figure}\\)|${neg_accounting_number}|${signed_currecy_figure})$` );
 }
 
 export function currency_parser(options:currency_regex_options):{(x:string):number}{
@@ -34,18 +37,16 @@ export function currency_parser(options:currency_regex_options):{(x:string):numb
         throw new Error(`The decimal character("${options.decimal}") must differ from the separator ("${options.separator}")`)
 	var dec = options.decimal,
 	    xdec = xreg(options.decimal),
-	    regex = currency_regex(options),
-	// currency string extended regex
-	    xcs = xreg((typeof options.symbol === 'string') ?  options.symbol : "\\p{Sc}");
-	// separator extended regex
-	const xsep = xreg(options.separator === "." ? "\\." : options.separator);
+	    validator = currency_regex(options),
+	    xcs = xreg((typeof options.symbol === 'string') ?  options.symbol : "\\p{Sc}"),
+        xsep = xreg(options.separator === "." ? "\\." : options.separator);
 	return  function(x) {
 		var x_copy = x;
-		if(!regex.test(x)){
-			throw new Error("Invalid value string: " + x);
-		}
+		if(!validator.test(x)){ throw new Error("Invalid value string: " + x); }
+        // remove the separators and the currency symbol
 		x = xreg.replace(x ,xcs,"");
 		x = xreg.replace(x ,xsep,"","all");
+        // replace the decimal with '.', if needed
 		if(dec !== "."){
 			x = xreg.replace(x ,xdec,".");
 		}
@@ -66,15 +67,15 @@ export function currency_parser(options:currency_regex_options):{(x:string):numb
 // ------------------------------
 // pre-packaged validators
 // ------------------------------
-const english_currency_regex:RegExp =  currency_regex({decimal:'.',separator:','});
-const euro_currency_regex:RegExp =  currency_regex({decimal:',',separator:'.'});
+export const english_currency_regex:RegExp =  currency_regex({decimal:'.',separator:','});
+export const euro_currency_regex:RegExp =  currency_regex({decimal:',',separator:'.'});
 
-export function is_english_currency(x:string):boolean{ return english_currency_regex.test(x); }
-export function is_euro_currency(x:string):boolean{ return euro_currency_regex.test(x); }
-
-export function is_currency_string(x:string,options:currency_regex_options):boolean{
-  	return currency_regex(options).test(x);
-}
+//-- export function is_english_currency(x:string):boolean{ return english_currency_regex.test(x); }
+//-- export function is_euro_currency(x:string):boolean{ return euro_currency_regex.test(x); }
+//-- 
+//-- export function is_currency_string(x:string,options:currency_regex_options):boolean{
+//--   	return currency_regex(options).test(x);
+//-- }
 
 // ------------------------------
 // pre-packaged parsers

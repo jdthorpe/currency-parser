@@ -19,25 +19,23 @@ function currency_regex(options) {
     var integer_part = "(([1-9]\\d{0,2}([" + options.separator + "]\\d{3})+)|0|([1-9]\\d*))", decimal_part = "([" + options.decimal + "]\\d+)", 
     // optional currency symbol followed by either (a) an interger part followed by
     // an optional decimal part, or (b)just a decimal part 
-    currecy_figure = currency_symbol + "?(" + integer_part + decimal_part + "?|" + decimal_part + ")";
-    return xreg("^([+-]?" + currecy_figure + "|\\(" + currecy_figure + "\\))$");
+    number_part = "(" + integer_part + decimal_part + "?|" + decimal_part + ")", neg_accounting_number = currency_symbol + "?\\(" + number_part + "\\)", currecy_figure = currency_symbol + "?" + number_part, signed_currecy_figure = currency_symbol + "?[+-]" + number_part;
+    return xreg("^([+-]?" + currecy_figure + "|\\(" + currecy_figure + "\\)|" + neg_accounting_number + "|" + signed_currecy_figure + ")$");
 }
 exports.currency_regex = currency_regex;
 function currency_parser(options) {
     if (options.decimal === options.separator)
         throw new Error("The decimal character(\"" + options.decimal + "\") must differ from the separator (\"" + options.separator + "\")");
-    var dec = options.decimal, xdec = xreg(options.decimal), regex = currency_regex(options), 
-    // currency string extended regex
-    xcs = xreg((typeof options.symbol === 'string') ? options.symbol : "\\p{Sc}");
-    // separator extended regex
-    var xsep = xreg(options.separator === "." ? "\\." : options.separator);
+    var dec = options.decimal, xdec = xreg(options.decimal), validator = currency_regex(options), xcs = xreg((typeof options.symbol === 'string') ? options.symbol : "\\p{Sc}"), xsep = xreg(options.separator === "." ? "\\." : options.separator);
     return function (x) {
         var x_copy = x;
-        if (!regex.test(x)) {
+        if (!validator.test(x)) {
             throw new Error("Invalid value string: " + x);
         }
+        // remove the separators and the currency symbol
         x = xreg.replace(x, xcs, "");
         x = xreg.replace(x, xsep, "", "all");
+        // replace the decimal with '.', if needed
         if (dec !== ".") {
             x = xreg.replace(x, xdec, ".");
         }
@@ -58,16 +56,14 @@ exports.currency_parser = currency_parser;
 // ------------------------------
 // pre-packaged validators
 // ------------------------------
-var english_currency_regex = currency_regex({ decimal: '.', separator: ',' });
-var euro_currency_regex = currency_regex({ decimal: ',', separator: '.' });
-function is_english_currency(x) { return english_currency_regex.test(x); }
-exports.is_english_currency = is_english_currency;
-function is_euro_currency(x) { return euro_currency_regex.test(x); }
-exports.is_euro_currency = is_euro_currency;
-function is_currency_string(x, options) {
-    return currency_regex(options).test(x);
-}
-exports.is_currency_string = is_currency_string;
+exports.english_currency_regex = currency_regex({ decimal: '.', separator: ',' });
+exports.euro_currency_regex = currency_regex({ decimal: ',', separator: '.' });
+//-- export function is_english_currency(x:string):boolean{ return english_currency_regex.test(x); }
+//-- export function is_euro_currency(x:string):boolean{ return euro_currency_regex.test(x); }
+//-- 
+//-- export function is_currency_string(x:string,options:currency_regex_options):boolean{
+//--   	return currency_regex(options).test(x);
+//-- }
 // ------------------------------
 // pre-packaged parsers
 // ------------------------------
@@ -77,122 +73,3 @@ function english_currency_value(x) { return exports.english_currency_parser(x); 
 exports.english_currency_value = english_currency_value;
 function euro_currency_value(x) { return exports.euro_currency_parser(x); }
 exports.euro_currency_value = euro_currency_value;
-// ------------------------------
-// AJV.keywords functionality
-// ------------------------------
-function add_ajv_Keywords(ajv) {
-    if (!(ajv instanceof require('ajv'))) {
-        throw new Error('add_ajv_Keywords must be called with an instance of Ajv');
-    }
-    ajv.addKeyword('currency-en-value', {
-        "modifying": true,
-        "type": 'string',
-        "compile": function () {
-            console.log("compiling currency-en-value schema: ");
-            return function (data, path, parent, key) {
-                try {
-                    parent[key] = exports.english_currency_parser(data);
-                    return true;
-                }
-                catch (err) {
-                    return false;
-                }
-            };
-        }
-    });
-    ajv.addKeyword('currency-eu-value', {
-        "modifying": true,
-        "type": 'string',
-        "compile": function () {
-            console.log("compiling currency-eu-value schema: ");
-            return function (data, path, parent, key) {
-                try {
-                    parent[key] = exports.euro_currency_parser(data);
-                    return true;
-                }
-                catch (err) {
-                    return false;
-                }
-            };
-        }
-    });
-    ajv.addKeyword('currency-value', {
-        "modifying": true,
-        "type": 'string',
-        "compile": function (schema) {
-            console.log("compiling currency-value schema: ", schema);
-            var parser = currency_parser(schema);
-            return function (data, path, parent, key) {
-                try {
-                    parent[key] = parser(data);
-                    return true;
-                }
-                catch (err) {
-                    return false;
-                }
-            };
-        },
-        "metaSchema": {
-            "type": "object",
-            "properties": {
-                "decimal": {
-                    "type": 'string',
-                    "minLength": 1,
-                },
-                "separator": {
-                    "type": 'string',
-                    "minLength": 1,
-                },
-                "symbol": {
-                    "type": 'string',
-                    "minLength": 1,
-                },
-            },
-            "required": ["decimal", "separator",],
-        },
-    });
-    // --------------------------------------------------
-    // string-to-number conversions
-    // --------------------------------------------------
-    ajv.addKeyword('currency-en', {
-        "type": 'string',
-        "compile": function () {
-            console.log("compiling currency-en");
-            return function (data) { return english_currency_regex.test(data); };
-        }
-    });
-    ajv.addKeyword('currency-eu', {
-        "type": 'string',
-        "compile": function () {
-            console.log("compiling currency-eu");
-            return function (data) { return euro_currency_regex.test(data); };
-        }
-    });
-    ajv.addKeyword('currency', {
-        "type": 'string',
-        "compile": function (schema) {
-            console.log("compiling currency-value schema: ", schema);
-            var regex = currency_regex(schema);
-            return function (data) { return regex.test(data); };
-        },
-        "metaSchema": {
-            "type": "object",
-            "properties": {
-                "decimal": {
-                    "type": 'string',
-                    "minLength": 1,
-                },
-                "separator": {
-                    "type": 'string',
-                    "minLength": 1,
-                },
-                "symbol": {
-                    "type": 'string',
-                    "minLength": 1,
-                },
-            },
-            required: ["decimal", "separator",],
-        },
-    });
-}
-exports.add_ajv_Keywords = add_ajv_Keywords;
