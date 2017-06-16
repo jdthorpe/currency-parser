@@ -65,7 +65,7 @@ CP.euro_currency_parser("\u20ac1.234.567,89")   // 1234567.89
 CP.euro_currency_parser("\u20ac(1.234.567,89)") // -1234567.89
 CP.euro_currency_parser("(\u00a51.234.567,89)") // -1234567.89
 
-var wierd_currency_paresr = CP.currency_regex({decimal:"v",separator:"_"});
+var wierd_currency_parser = CP.currency_parser({decimal:"v",separator:"_"});
 wierd_currency_parser("$1_234_567v89")        // 1234567.89
 wierd_currency_parser("$-1_234_567v89")       // -1234567.89
 wierd_currency_parser("\u20ac1_234_567v89")   // 1234567.89
